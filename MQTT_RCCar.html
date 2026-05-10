@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta charset="utf-8">
+  <title>MQTT ESP32 RC Car</title>
+  
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body { text-align: center; font-family: Arial; margin-top: 50px; background-color: #222; color: white;}
+    .btn { background-color: #4CAF50; border: none; color: white; padding: 20px; font-size: 30px; 
+           border-radius: 15px; width: 100px; height: 100px; margin: 10px; user-select: none; -webkit-user-select: none;}
+    .btn:active { background-color: #3e8e41; }
+    .btn-stop { background-color: #f44336; }
+    .btn-stop:active { background-color: #da190b; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; max-width: 400px; margin: 0 auto; }
+    .empty { visibility: hidden; }
+    #status { margin-bottom: 20px; font-weight: bold; color: orange; }
+  </style>
+  <script>
+    
+    const broker = 'ws://broker.emqx.io:8084/mqtt';
+    const topic = 'hust/iot/rccar/control_v1';
+    
+   
+    const client = mqtt.connect(broker);
+
+    client.on('connect', function () {
+      document.getElementById('status').innerText = "Đã kết nối Server MQTT ";
+      document.getElementById('status').style.color = "lightgreen";
+    });
+
+    client.on('offline', function () {
+      document.getElementById('status').innerText = "Đang mất kết nối ";
+      document.getElementById('status').style.color = "red";
+    });
+
+   
+    function sendCommand(cmd) {
+      if(client.connected) {
+        client.publish(topic, cmd);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h2>ĐIỀU KHIỂN XE MQTT</h2>
+  <div id="status">Đang kết nối Server... </div>
+  <div class="grid">
+    <div class="empty"></div>
+    <button class="btn" onmousedown="sendCommand('F')" onmouseup="sendCommand('S')" ontouchstart="sendCommand('F')" ontouchend="sendCommand('S')">⬆️</button>
+    <div class="empty"></div>
+    
+    <button class="btn" onmousedown="sendCommand('L')" onmouseup="sendCommand('S')" ontouchstart="sendCommand('L')" ontouchend="sendCommand('S')">⬅️</button>
+    <button class="btn btn-stop" onclick="sendCommand('S')">⏹️</button>
+    <button class="btn" onmousedown="sendCommand('R')" onmouseup="sendCommand('S')" ontouchstart="sendCommand('R')" ontouchend="sendCommand('S')">➡️</button>
+    
+    <div class="empty"></div>
+    <button class="btn" onmousedown="sendCommand('B')" onmouseup="sendCommand('S')" ontouchstart="sendCommand('B')" ontouchend="sendCommand('S')">⬇️</button>
+    <div class="empty"></div>
+  </div>
+</body>
+</html>
